@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Full Guide: Botting on Wolvevilles (Client Side)</title>
+  <title>internet: docs 1</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
 
@@ -183,6 +183,23 @@
       scroll-margin-top: 16px;
     }
 
+      .post-img {
+    display: block;
+    max-width: 100%;
+    margin: 14px 0;
+    box-shadow: var(--bevel-out), 2px 2px 0 var(--border-dk);
+    }
+
+    .post-img-caption {
+      font-size: 0.68rem;
+      color: var(--text-faint);
+      padding: 4px 8px;
+      background: var(--raised);
+      box-shadow: var(--bevel-out);
+      margin-top: -2px;
+      display: block;
+    }
+
     .article-body p { margin-bottom: 12px; }
     .article-body a { color: var(--link); }
     .article-body strong { color: var(--text); font-style: italic; }
@@ -301,13 +318,10 @@
 
   <!-- HEADER -->
   <header class="site-header">
-    <a class="site-title" href="index.html">reverse<span>sec</span></a>
-    <div class="site-subtitle">// research & ramblings</div>
+    <div class="site-title">internet<span>corpse</span></div>
+    <div class="site-subtitle">// docs & ramblings</div>
     <nav class="header-nav">
-      <a href="index.html">archive</a>
-      <a href="#">about</a>
-      <a href="#">contact</a>
-      <a href="#">rss</a>
+      <a href="https://discord.gg/Ww4u7swF8q">contact</a>
     </nav>
   </header>
 
@@ -317,14 +331,14 @@
 
     <div class="toc-label">Table of Contents</div>
     <ul class="toc-list">
-      <li><a href="#background">Background</a></li>
-      <li><a href="#how-it-works">How It Works</a></li>
-      <li class="sub"><a href="#the-endpoint">The Endpoint</a></li>
-      <li class="sub"><a href="#validation-gap">Validation Gap</a></li>
-      <li><a href="#poc">Proof of Concept</a></li>
-      <li><a href="#impact">Impact &amp; Scope</a></li>
-      <li><a href="#mitigation">Mitigation</a></li>
-      <li><a href="#disclosure">Disclosure Timeline</a></li>
+      <li><a href="#background">Browser</a></li>
+      <li><a href="#how-it-works">Bypassing</a></li>
+      <li class="sub"><a href="#the-endpoint">Bypassing IP Blocks</a></li>
+      <li class="sub"><a href="#validation-gap">The Cloudflare Loophole</a></li>
+      <li><a href="#poc">CPU Temperature Management and Memory Reduction</a></li>
+      <li><a href="#impact">Banning</a></li>
+      <li><a href="#mitigation">Coding</a></li>
+      <li><a href="#disclosure">Libaries</a></li>
     </ul>
   </aside>
 
@@ -332,141 +346,93 @@
   <article class="article-wrap" id="article-pane">
 
     <div class="article-meta">
-      <span class="badge">research</span>
-      <span class="meta-text">Feb 06, 2025</span>
-      <span class="meta-text">by idkhidden</span>
+      <span class="badge">docs</span>
+      <span class="meta-text">Mar 22, 202</span>
+      <span class="meta-text">by uly cottrill</span>
     </div>
 
-    <h1 class="article-title">Tricking Users with YouTube's Redirect System</h1>
+    <h1 class="article-title">Full Guide: Botting on Wolvevilles </h1>
 
     <div class="article-body">
 
-      <h2 id="background">Background</h2>
-      <p>YouTube, like many large platforms, wraps outbound links in its own redirect system. The intent is benign: track click analytics, warn users when leaving the platform, and maintain referrer hygiene. But the implementation has a flaw that turns this trusted infrastructure into an open redirect vector.</p>
-      <p>I stumbled on this while analyzing phishing campaigns in the wild. I kept seeing URLs that looked like YouTube links at first glance but were routing users somewhere completely different. That got me curious about what exactly YouTube validates — or doesn't.</p>
-
+      <h2 id="background">Browser</h2>
+      <p>Wolvesville runs on both mobile and PC, but if you’re serious about botting, forget the Steam client or standard browsers. The move here is <strong>Opera GX</strong></p>
+      <p>It’s not just for "gamers" it’s about the resource granularity. With GX Control, you can hard-cap RAM and CPU usage, ensuring your setup doesn't choke your system during long runs.</p>
       <div class="ornament">- - - - -</div>
 
-      <h2 id="how-it-works">How It Works</h2>
+      <h2 id="how-it-works">Bypassing IP Blocks & The Cloudflare Loophole</h2>
 
-      <h3 id="the-endpoint">The Redirect Endpoint</h3>
-      <p>YouTube exposes a redirect endpoint at:</p>
+      <h3 id="the-endpoint">Bypassing IP Blocks</h3>
+      <p>Don't bother with browser VPNs anymore. Wolvesville’s updated security catches those right after the verification handshake. Instead, use Cloudflare WARP. It’s the only reliable way to run multiple accounts across different windows without getting hit by IP rate limits.</p>
+      <img class="post-img" src="../assets/heat.png" alt="IP block diagram"/>
+      <span class="post-img-caption"><strong>403 block page served by Wolvesville when a browser VPN is detected 
+during the connection handshake</strong></span>
+      <h3 id="validation-gap">The Cloudflare Loophole</h3>
+      <p>The "why" is the interesting part. It looks like Wolvesville uses Cloudflare’s own security suite (like Turnstile) for their backend. My theory is that because the traffic is coming from a Cloudflare IP, the system flags it as "trusted" and lets you skip the security verification entirely. It’s a massive logic gap in their new security layer.</p>
+      <img class="post-img" src="../assets/cloudflarepass.gif" alt="cf lies"/>
+      <span class="post-img-caption"><strong>no verification check, cloudflare lies</strong></span>
+      <div class="ornament">- - - - -</div>
+
+      <h2 id="poc">CPU Temperature Management and Memory Reduction</h2>
+      <p>The real trick to keeping CPU temps low is simple: don't stay on the game tab.
+         If you switch from <code>wolvesville.com</code> to a <code>blank.page,</code> Opera GX unloads the game’s heavy assets but keeps the socket alive. You stay connected, but your CPU usage drops to near
+          zero. There’s a tiny 5 secs reload when you swap back.</p>
+          <p>For the RAM side, I use <strong>Easy Context Menu (Sordum)</strong> added to the system path. By calling a batch script every 15 minutes, you can force a memory flush, preventing the typical browser bloat that usually crashes long sessions.</p>
 
       <div class="code-block">
         <div class="code-block-header">
-          <span class="code-lang">url</span>
+          <span class="code-lang">Batch</span>
           <button class="code-copy" onclick="copyCode(this)">copy</button>
         </div>
-        <pre>https://www.youtube.com/redirect?q=https://evil.example.com</pre>
+<pre><span class="kw">EcMenu /Admin /ReduceMemory</span>
       </div>
-
-      <p>When a user clicks a link like this, their browser shows <strong>youtube.com</strong> momentarily — enough for an attacker to build a convincing pre-click preview. More critically, link previews in messaging apps and email clients all display the YouTube domain.</p>
-
-      <h3 id="validation-gap">The Validation Gap</h3>
-      <p>YouTube does show a warning interstitial for completely external URLs. But the validation logic has edge cases that can be bypassed — specifically around URL structures that embed YouTube subdomains or use URL encoding tricks.</p>
-
-      <div class="code-block">
-        <div class="code-block-header">
-          <span class="code-lang">bypass examples</span>
-          <button class="code-copy" onclick="copyCode(this)">copy</button>
-        </div>
-<pre><span class="cm"># basic — shows warning (expected)</span>
-https://youtube.com/redirect?q=https://evil.com
-
-<span class="cm"># subdomain in path — bypass in some clients</span>
-https://youtube.com/redirect?q=https://evil.com/youtube.com
-
-<span class="cm"># URL-encoded @ trick</span>
-https://youtube.com/redirect?q=https://youtube.com%40evil.com
-
-<span class="cm"># fragment abuse</span>
-https://youtube.com/redirect?q=https://evil.com%23youtube.com</pre>
-      </div>
-
-      <p>The <code>%40</code> trick is particularly effective. Decoded, <code>youtube.com%40evil.com</code> becomes <code>youtube.com@evil.com</code> — in URL syntax the username is <code>youtube.com</code> and the actual host is <code>evil.com</code>. Many parsers and human eyes misread this.</p>
-
-      <div class="callout">
-        <strong>⚠ note</strong>
-        These bypass techniques vary in effectiveness across browsers and client versions. The core open redirect itself remains consistent.
+        <div class="callout">
+        <strong>⚠ Tip</strong>
+        Using blank.page isn't just for saving resources. You can actually type your account name directly onto the page, making it the perfect low-cost dashboard to track exactly which account is running in which window.
       </div>
 
       <div class="ornament">- - - - -</div>
 
-      <h2 id="poc">Proof of Concept</h2>
-      <p>Minimal Python script to generate redirect URLs and test whether the interstitial is served or bypassed:</p>
+      <h2 id="impact">Banning</h2>
+      <p>How does Wolvesville handle bans these days? Honestly, I’m not sure how advanced their actual bot detection is, but my current setup doesn’t seem to trigger any "automated bot" flags. From my experience, the bans aren't coming from manual Guardian reviews—they’re mostly from the game’s auto-ban system.</p>
+      <p>In short, you’ll likely get flagged if you’re reported too often for being AFK. The interesting part is the penalty: it seems to be capped at 3 days. Whether it’s your first time or your tenth, it stays at 3 days. It looks like a standard automated response for accounts that hit a certain threshold of reports.</p>
+    <div class="callout">
+        <strong>⚠ Tip</strong>
+        There’s a clear difference between getting banned by a Guardian and the auto-ban system. Guardians usually step in for serious violations like game-throwing, toxicity, slurs, or chat spam. Those reports are manually reviewed before any action is taken. The auto-ban, however, seems to trigger primarily under the "Other" report category. Every time my bot accounts have been suspended, the reason is always listed as "Other." This confirms that the system is just automating a 3-day timeout based on the number of reports, rather than a Guardian specifically looking at the account.
 
-      <div class="code-block">
-        <div class="code-block-header">
-          <span class="code-lang">python</span>
-          <button class="code-copy" onclick="copyCode(this)">copy</button>
-        </div>
-<pre><span class="kw">import</span> requests
-<span class="kw">from</span> urllib.parse <span class="kw">import</span> quote
-
-<span class="fn">BASE</span> = <span class="str">"https://www.youtube.com/redirect?q="</span>
-
-targets = [
-    <span class="str">"https://evil.example.com"</span>,
-    <span class="str">"https://evil.example.com/youtube.com"</span>,
-    <span class="str">"https://youtube.com"</span> + quote(<span class="str">"@"</span>) + <span class="str">"evil.example.com"</span>,
-]
-
-<span class="kw">for</span> url <span class="kw">in</span> targets:
-    full = BASE + quote(url, safe=<span class="str">":/"</span>)
-    r = requests.get(full, allow_redirects=<span class="kw">False</span>)
-    <span class="cm"># 302 = direct redirect (no interstitial)</span>
-    <span class="cm"># 200 = interstitial page served</span>
-    print(<span class="fn">f</span><span class="str">"{r.status_code} — {full[:80]}"</span>)</pre>
       </div>
+      <div class="ornament">- - - - -</div>
 
-      <blockquote>"a 302 where you expected a 200 is a finding."</blockquote>
+      <h2 id="mitigation">Coding</h2>
+      <p>I’m not going to spoon-feed the code here if you’re into botting, you probably know the basics anyway. But the logic is dead simple. You just need to detect the screen, find the buttons, and handle the tab swaps. I'll drop all the libaries below.</p>
+
 
       <div class="ornament">- - - - -</div>
 
-      <h2 id="impact">Impact &amp; Scope</h2>
-      <p>The impact here is primarily <strong>phishing and social engineering</strong>. An attacker can craft a URL that appears as a YouTube link in messaging app previews, passes naive URL blocklists checking only the root domain, and survives some email security scanners that whitelist known platforms.</p>
-      <p>This isn't remote code execution. It doesn't compromise YouTube accounts. But in a spear-phishing context, a believable URL is often all you need.</p>
-
-      <div class="ornament">- - - - -</div>
-
-      <h2 id="mitigation">Mitigation</h2>
-      <p>From a user perspective: always check the final destination URL after any redirect resolves. Browser extensions like <em>ClearURLs</em> can strip tracking redirects before they execute.</p>
-      <p>From a platform perspective, the fix is straightforward — strict allowlist validation of the <code>q</code> parameter against known YouTube-owned domains, with proper URL normalization applied before comparison.</p>
-
-      <div class="callout">
-        <strong>for developers</strong>
-        Normalize the URL first (decode, parse, re-encode), then validate against a strict allowlist. Never validate against the raw string — that's where bypasses live.
-      </div>
-
-      <div class="ornament">- - - - -</div>
-
-      <h2 id="disclosure">Disclosure Timeline</h2>
+      <h2 id="disclosure">Libaries</h2>
       <div class="timeline">
-        <div class="timeline-row"><span class="tl-date">2024-11-12</span><span class="tl-event">Initial discovery</span></div>
-        <div class="timeline-row"><span class="tl-date">2024-11-18</span><span class="tl-event">Reported via Google VRP</span></div>
-        <div class="timeline-row"><span class="tl-date">2024-12-04</span><span class="tl-event">Triaged, marked as intended behavior</span></div>
-        <div class="timeline-row"><span class="tl-date">2024-12-10</span><span class="tl-event">Follow-up sent with bypass PoCs</span></div>
-        <div class="timeline-row"><span class="tl-date">2025-01-15</span><span class="tl-event">Re-triaged, acknowledged</span></div>
-        <div class="timeline-row"><span class="tl-date">2025-02-06</span><span class="tl-event">Public disclosure (90-day window elapsed)</span></div>
+        <div class="timeline-row"><span class="tl-date">opencv(cv2)</span><span class="tl-event">Template Matching to locate buttons in images</span></div>
+        <div class="timeline-row"><span class="tl-date">numpy</span><span class="tl-event">Image array manipulation</span></div>
+        <div class="timeline-row"><span class="tl-date">pyautogui</span><span class="tl-event">Automated mouse clicking</span></div>
+        <div class="timeline-row"><span class="tl-date">PIL / Pillow</span><span class="tl-event">Screen capture (Screenshots)</span></div>
+        <div class="timeline-row"><span class="tl-date">win32gui / win32con</span><span class="tl-event">Windows window management (focus, sizing)</span></div>
+        <div class="timeline-row"><span class="tl-date">win32api / win32process</span><span class="tl-event">Sending keyboard events and retrieving Process IDs</span></div>
+        <div class="timeline-row"><span class="tl-date">win32console</span><span class="tl-event">Console window configuration</span></div>
+        <div class="timeline-row"><span class="tl-date">psutil</span><span class="tl-event">Finding processes by name (opera.exe)</span></div>
+        <div class="timeline-row"><span class="tl-date">pyautogui</span><span class="tl-event">Automated mouse clicking</span></div>
+        <div class="timeline-row"><span class="tl-date">subprocess</span><span class="tl-event">Running EcMenu to reduce RAM usage</span></div>
+        <div class="timeline-row"><span class="tl-date">winotify</span><span class="tl-event">Displaying Windows notifications</span></div>
+        <div class="timeline-row"><span class="tl-date">threading</span><span class="tl-event">Running the Memory Reducer in the background</span></div>
       </div>
 
       <div class="post-nav">
-        <a class="nav-btn" href="index.html">← back to index</a>
-        <a class="nav-btn" href="#">next post →</a>
+        <a class="nav-btn" href="../index.html">← back to index</a>
+        <a class="nav-btn" href="#">not found</a>  <!-- → -->
       </div>
 
     </div>
   </article>
 
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <p>© 2025 reversesec — independent security research</p>
-    <p>
-      <a href="#">twitter</a> &nbsp;·&nbsp;
-      <a href="#">github</a> &nbsp;·&nbsp;
-      <a href="#">rss feed</a>
-    </p>
-  </footer>
 
 </div>
 
