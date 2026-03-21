@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Full Guide: Botting on Wolvevilles (Client Side)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #3c3c3c;
+      --surface:   #4a4a4a;
+      --raised:    #555555;
+      --sunken:    #2e2e2e;
+      --border-lt: #6e6e6e;
+      --border-dk: #1c1c1c;
+      --text:      #e8e8e8;
+      --text-dim:  #aaaaaa;
+      --text-faint:#666666;
+      --sel-bg:    #2a5a8c;
+      --sel-text:  #ffffff;
+      --link:      #88bbee;
+      --code-bg:   #262626;
+      --mono:      'Courier Prime', 'Courier New', monospace;
+      --bevel-out: inset 1px 1px 0 var(--border-lt), inset -1px -1px 0 var(--border-dk);
+      --bevel-in:  inset 1px 1px 0 var(--border-dk), inset -1px -1px 0 var(--border-lt);
+    }
+
+    ::selection { background: var(--sel-bg); color: var(--sel-text); }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.75;
+      min-height: 100vh;
+      background-image: repeating-linear-gradient(
+        45deg, transparent, transparent 2px,
+        rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px
+      );
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--sunken); }
+    ::-webkit-scrollbar-thumb { background: var(--raised); box-shadow: var(--bevel-out); }
+
+    /* ── WRAPPER ── */
+    .wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+      box-shadow: var(--bevel-out), 3px 3px 0 var(--border-dk);
+      background: var(--surface);
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      grid-column: 1 / -1;
+      background: var(--sel-bg);
+      padding: 16px 24px 14px;
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      box-shadow: inset 0 -2px 0 var(--border-dk), inset 0 -3px 0 var(--border-lt);
+    }
+    .site-title {
+      font-size: 1.5rem; font-weight: 700; color: #ffffff;
+      letter-spacing: 0.04em; line-height: 1; text-decoration: none;
+      font-family: var(--mono);
+    }
+    .site-title span { color: #aaddff; }
+    .site-subtitle { font-size: 0.7rem; color: rgba(255,255,255,0.55); letter-spacing: 0.06em; }
+    .header-nav { margin-left: auto; display: flex; gap: 2px; }
+    .header-nav a {
+      font-size: 0.72rem; color: rgba(255,255,255,0.75); text-decoration: none;
+      padding: 3px 10px; background: rgba(255,255,255,0.08);
+      box-shadow: var(--bevel-out); transition: background 0.15s;
+    }
+    .header-nav a:hover { background: rgba(255,255,255,0.18); color: #fff; }
+
+    /* ── SIDEBAR / TOC ── */
+    .sidebar {
+      border-right: 1px solid var(--border-dk);
+      box-shadow: 1px 0 0 var(--border-lt);
+      padding: 20px 12px;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      align-self: start;
+    }
+
+    .back-btn {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 4px 10px;
+      background: var(--raised);
+      box-shadow: var(--bevel-out);
+      text-align: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .back-btn:hover { background: var(--sel-bg); color: var(--sel-text); }
+    .back-btn::before { content: '← '; }
+
+    .toc-label {
+      font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.14em; color: var(--text-dim);
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border-dk);
+      box-shadow: 0 1px 0 var(--border-lt);
+    }
+
+    .toc-list { list-style: none; display: flex; flex-direction: column; }
+    .toc-list li a {
+      display: block; padding: 3px 8px;
+      font-size: 0.7rem; color: var(--text-dim);
+      text-decoration: none; line-height: 1.4;
+      transition: background 0.1s, color 0.1s;
+    }
+    .toc-list li a:hover { background: var(--sel-bg); color: var(--sel-text); }
+    .toc-list li a.active { background: var(--sel-bg); color: var(--sel-text); }
+    .toc-list li.sub a { padding-left: 18px; font-size: 0.65rem; color: var(--text-faint); }
+    .toc-list li.sub a:hover { color: var(--sel-text); }
+
+    /* ── ARTICLE ── */
+    .article-wrap {
+      padding: 24px 32px 48px;
+      overflow-y: auto;
+      animation: fadeIn 0.4s ease both;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .article-meta {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-dk);
+      box-shadow: 0 1px 0 var(--border-lt);
+    }
+    .badge {
+      font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 2px 7px; background: var(--raised);
+      box-shadow: var(--bevel-out); color: var(--link);
+    }
+    .meta-text { font-size: 0.68rem; color: var(--text-dim); }
+
+    .article-title {
+      font-size: 1.2rem; font-weight: 700; color: var(--text);
+      line-height: 1.3; margin-bottom: 24px;
+    }
+
+    /* body text */
+    .article-body { font-size: 0.85rem; color: var(--text-dim); line-height: 1.85; }
+
+    .article-body h2 {
+      font-size: 0.9rem; font-weight: 700; color: var(--text);
+      margin: 28px 0 10px;
+      padding: 4px 10px;
+      background: var(--raised);
+      box-shadow: var(--bevel-out);
+      scroll-margin-top: 16px;
+    }
+    .article-body h3 {
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--link); text-transform: uppercase;
+      letter-spacing: 0.1em; margin: 20px 0 8px;
+      scroll-margin-top: 16px;
+    }
+
+    .article-body p { margin-bottom: 12px; }
+    .article-body a { color: var(--link); }
+    .article-body strong { color: var(--text); font-style: italic; }
+    .article-body em { color: var(--text); }
+
+    .article-body blockquote {
+      margin: 14px 0; padding: 8px 14px;
+      border-left: 3px solid var(--raised);
+      background: var(--sunken);
+      box-shadow: var(--bevel-in);
+      color: var(--text-dim); font-style: italic; font-size: 0.82rem;
+    }
+
+    /* inline code */
+    .article-body code {
+      font-family: var(--mono); font-size: 0.8rem;
+      background: var(--sunken); box-shadow: var(--bevel-in);
+      padding: 0 5px; color: #aaddaa;
+    }
+
+    /* code block */
+    .code-block { margin: 14px 0; box-shadow: var(--bevel-in); }
+    .code-block-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 3px 10px; background: var(--raised);
+      box-shadow: inset 0 -1px 0 var(--border-dk), inset 0 1px 0 var(--border-lt);
+    }
+    .code-lang { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+    .code-copy {
+      font-family: var(--mono); font-size: 0.6rem; color: var(--text-faint);
+      background: var(--surface); box-shadow: var(--bevel-out);
+      border: none; cursor: pointer; padding: 1px 8px;
+    }
+    .code-copy:hover { background: var(--sel-bg); color: var(--sel-text); box-shadow: var(--bevel-in); }
+    .code-block pre {
+      padding: 12px 14px; overflow-x: auto; font-family: var(--mono);
+      font-size: 0.8rem; line-height: 1.6; color: #b8c8b8; background: var(--code-bg);
+    }
+    .code-block pre .kw  { color: #b8a4e0; }
+    .code-block pre .str { color: #88ccaa; }
+    .code-block pre .cm  { color: #555; font-style: italic; }
+    .code-block pre .fn  { color: #ddbb88; }
+
+    /* callout */
+    .callout {
+      margin: 14px 0; padding: 8px 12px;
+      border-left: 3px solid var(--link);
+      background: var(--sunken); box-shadow: var(--bevel-in);
+      font-size: 0.82rem; color: var(--text-dim);
+    }
+    .callout strong {
+      color: var(--link); font-style: normal; display: block;
+      margin-bottom: 4px; text-transform: uppercase;
+      font-size: 0.6rem; letter-spacing: 0.1em;
+    }
+
+    /* timeline */
+    .timeline {
+      margin: 12px 0; background: var(--sunken); box-shadow: var(--bevel-in);
+    }
+    .timeline-row {
+      display: grid; grid-template-columns: 110px 1fr;
+      gap: 8px; font-size: 0.75rem; padding: 4px 12px;
+      border-bottom: 1px solid var(--border-dk);
+    }
+    .timeline-row:last-child { border-bottom: none; }
+    .tl-date { color: var(--text-faint); }
+    .tl-event { color: var(--text-dim); }
+
+    /* ornament */
+    .ornament {
+      text-align: center; color: var(--border-lt);
+      margin: 20px 0; font-size: 0.75rem; letter-spacing: 0.3em;
+      user-select: none;
+    }
+
+    /* post nav */
+    .post-nav {
+      margin-top: 32px; padding-top: 14px;
+      border-top: 1px solid var(--border-dk);
+      box-shadow: 0 -1px 0 var(--border-lt);
+      display: flex; justify-content: space-between; gap: 8px;
+    }
+    .nav-btn {
+      font-size: 0.72rem; color: var(--text-dim); text-decoration: none;
+      padding: 4px 14px; background: var(--raised);
+      box-shadow: var(--bevel-out); transition: background 0.15s, color 0.15s;
+    }
+    .nav-btn:hover { background: var(--sel-bg); color: var(--sel-text); }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      grid-column: 1 / -1;
+      background: var(--sunken);
+      box-shadow: inset 0 1px 0 var(--border-lt), inset 0 2px 0 var(--border-dk);
+      padding: 12px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .site-footer p { font-size: 0.62rem; color: var(--text-faint); letter-spacing: 0.05em; }
+    .site-footer a { color: var(--text-faint); text-decoration: none; transition: color 0.15s; }
+    .site-footer a:hover { color: var(--link); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      .wrapper { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .site-header { flex-wrap: wrap; gap: 8px; }
+      .header-nav { margin-left: 0; }
+      .article-wrap { padding: 18px 16px 40px; }
+      .site-footer { flex-direction: column; gap: 4px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <a class="site-title" href="index.html">reverse<span>sec</span></a>
+    <div class="site-subtitle">// research & ramblings</div>
+    <nav class="header-nav">
+      <a href="index.html">archive</a>
+      <a href="#">about</a>
+      <a href="#">contact</a>
+      <a href="#">rss</a>
+    </nav>
+  </header>
+
+  <!-- SIDEBAR TOC -->
+  <aside class="sidebar">
+    <a class="back-btn" href="../index.html">back to index</a>
+
+    <div class="toc-label">Table of Contents</div>
+    <ul class="toc-list">
+      <li><a href="#background">Background</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li class="sub"><a href="#the-endpoint">The Endpoint</a></li>
+      <li class="sub"><a href="#validation-gap">Validation Gap</a></li>
+      <li><a href="#poc">Proof of Concept</a></li>
+      <li><a href="#impact">Impact &amp; Scope</a></li>
+      <li><a href="#mitigation">Mitigation</a></li>
+      <li><a href="#disclosure">Disclosure Timeline</a></li>
+    </ul>
+  </aside>
+
+  <!-- ARTICLE -->
+  <article class="article-wrap" id="article-pane">
+
+    <div class="article-meta">
+      <span class="badge">research</span>
+      <span class="meta-text">Feb 06, 2025</span>
+      <span class="meta-text">by idkhidden</span>
+    </div>
+
+    <h1 class="article-title">Tricking Users with YouTube's Redirect System</h1>
+
+    <div class="article-body">
+
+      <h2 id="background">Background</h2>
+      <p>YouTube, like many large platforms, wraps outbound links in its own redirect system. The intent is benign: track click analytics, warn users when leaving the platform, and maintain referrer hygiene. But the implementation has a flaw that turns this trusted infrastructure into an open redirect vector.</p>
+      <p>I stumbled on this while analyzing phishing campaigns in the wild. I kept seeing URLs that looked like YouTube links at first glance but were routing users somewhere completely different. That got me curious about what exactly YouTube validates — or doesn't.</p>
+
+      <div class="ornament">- - - - -</div>
+
+      <h2 id="how-it-works">How It Works</h2>
+
+      <h3 id="the-endpoint">The Redirect Endpoint</h3>
+      <p>YouTube exposes a redirect endpoint at:</p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">url</span>
+          <button class="code-copy" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre>https://www.youtube.com/redirect?q=https://evil.example.com</pre>
+      </div>
+
+      <p>When a user clicks a link like this, their browser shows <strong>youtube.com</strong> momentarily — enough for an attacker to build a convincing pre-click preview. More critically, link previews in messaging apps and email clients all display the YouTube domain.</p>
+
+      <h3 id="validation-gap">The Validation Gap</h3>
+      <p>YouTube does show a warning interstitial for completely external URLs. But the validation logic has edge cases that can be bypassed — specifically around URL structures that embed YouTube subdomains or use URL encoding tricks.</p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">bypass examples</span>
+          <button class="code-copy" onclick="copyCode(this)">copy</button>
+        </div>
+<pre><span class="cm"># basic — shows warning (expected)</span>
+https://youtube.com/redirect?q=https://evil.com
+
+<span class="cm"># subdomain in path — bypass in some clients</span>
+https://youtube.com/redirect?q=https://evil.com/youtube.com
+
+<span class="cm"># URL-encoded @ trick</span>
+https://youtube.com/redirect?q=https://youtube.com%40evil.com
+
+<span class="cm"># fragment abuse</span>
+https://youtube.com/redirect?q=https://evil.com%23youtube.com</pre>
+      </div>
+
+      <p>The <code>%40</code> trick is particularly effective. Decoded, <code>youtube.com%40evil.com</code> becomes <code>youtube.com@evil.com</code> — in URL syntax the username is <code>youtube.com</code> and the actual host is <code>evil.com</code>. Many parsers and human eyes misread this.</p>
+
+      <div class="callout">
+        <strong>⚠ note</strong>
+        These bypass techniques vary in effectiveness across browsers and client versions. The core open redirect itself remains consistent.
+      </div>
+
+      <div class="ornament">- - - - -</div>
+
+      <h2 id="poc">Proof of Concept</h2>
+      <p>Minimal Python script to generate redirect URLs and test whether the interstitial is served or bypassed:</p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-lang">python</span>
+          <button class="code-copy" onclick="copyCode(this)">copy</button>
+        </div>
+<pre><span class="kw">import</span> requests
+<span class="kw">from</span> urllib.parse <span class="kw">import</span> quote
+
+<span class="fn">BASE</span> = <span class="str">"https://www.youtube.com/redirect?q="</span>
+
+targets = [
+    <span class="str">"https://evil.example.com"</span>,
+    <span class="str">"https://evil.example.com/youtube.com"</span>,
+    <span class="str">"https://youtube.com"</span> + quote(<span class="str">"@"</span>) + <span class="str">"evil.example.com"</span>,
+]
+
+<span class="kw">for</span> url <span class="kw">in</span> targets:
+    full = BASE + quote(url, safe=<span class="str">":/"</span>)
+    r = requests.get(full, allow_redirects=<span class="kw">False</span>)
+    <span class="cm"># 302 = direct redirect (no interstitial)</span>
+    <span class="cm"># 200 = interstitial page served</span>
+    print(<span class="fn">f</span><span class="str">"{r.status_code} — {full[:80]}"</span>)</pre>
+      </div>
+
+      <blockquote>"a 302 where you expected a 200 is a finding."</blockquote>
+
+      <div class="ornament">- - - - -</div>
+
+      <h2 id="impact">Impact &amp; Scope</h2>
+      <p>The impact here is primarily <strong>phishing and social engineering</strong>. An attacker can craft a URL that appears as a YouTube link in messaging app previews, passes naive URL blocklists checking only the root domain, and survives some email security scanners that whitelist known platforms.</p>
+      <p>This isn't remote code execution. It doesn't compromise YouTube accounts. But in a spear-phishing context, a believable URL is often all you need.</p>
+
+      <div class="ornament">- - - - -</div>
+
+      <h2 id="mitigation">Mitigation</h2>
+      <p>From a user perspective: always check the final destination URL after any redirect resolves. Browser extensions like <em>ClearURLs</em> can strip tracking redirects before they execute.</p>
+      <p>From a platform perspective, the fix is straightforward — strict allowlist validation of the <code>q</code> parameter against known YouTube-owned domains, with proper URL normalization applied before comparison.</p>
+
+      <div class="callout">
+        <strong>for developers</strong>
+        Normalize the URL first (decode, parse, re-encode), then validate against a strict allowlist. Never validate against the raw string — that's where bypasses live.
+      </div>
+
+      <div class="ornament">- - - - -</div>
+
+      <h2 id="disclosure">Disclosure Timeline</h2>
+      <div class="timeline">
+        <div class="timeline-row"><span class="tl-date">2024-11-12</span><span class="tl-event">Initial discovery</span></div>
+        <div class="timeline-row"><span class="tl-date">2024-11-18</span><span class="tl-event">Reported via Google VRP</span></div>
+        <div class="timeline-row"><span class="tl-date">2024-12-04</span><span class="tl-event">Triaged, marked as intended behavior</span></div>
+        <div class="timeline-row"><span class="tl-date">2024-12-10</span><span class="tl-event">Follow-up sent with bypass PoCs</span></div>
+        <div class="timeline-row"><span class="tl-date">2025-01-15</span><span class="tl-event">Re-triaged, acknowledged</span></div>
+        <div class="timeline-row"><span class="tl-date">2025-02-06</span><span class="tl-event">Public disclosure (90-day window elapsed)</span></div>
+      </div>
+
+      <div class="post-nav">
+        <a class="nav-btn" href="index.html">← back to index</a>
+        <a class="nav-btn" href="#">next post →</a>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>© 2025 reversesec — independent security research</p>
+    <p>
+      <a href="#">twitter</a> &nbsp;·&nbsp;
+      <a href="#">github</a> &nbsp;·&nbsp;
+      <a href="#">rss feed</a>
+    </p>
+  </footer>
+
+</div>
+
+<script>
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  // TOC active highlight
+  const pane = document.getElementById('article-pane');
+  const headings = document.querySelectorAll('[id]');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    headings.forEach(h => {
+      if (window.scrollY >= h.offsetTop - 60) current = h.id;
+    });
+    tocLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>

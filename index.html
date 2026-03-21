@@ -1,39 +1,364 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f9f9fb; }
-    </style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ReverseSec — research & ramblings</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #3c3c3c;
+      --surface:   #4a4a4a;
+      --raised:    #555555;
+      --sunken:    #2e2e2e;
+      --border-lt: #6e6e6e;
+      --border-dk: #1c1c1c;
+      --text:      #e8e8e8;
+      --text-dim:  #aaaaaa;
+      --text-faint:#666666;
+      --sel-bg:    #2a5a8c;
+      --sel-text:  #ffffff;
+      --link:      #88bbee;
+      --mono:      'Courier Prime', 'Courier New', monospace;
+      /* bevel helpers */
+      --bevel-out: inset 1px 1px 0 var(--border-lt), inset -1px -1px 0 var(--border-dk);
+      --bevel-in:  inset 1px 1px 0 var(--border-dk), inset -1px -1px 0 var(--border-lt);
+    }
+
+    ::selection { background: var(--sel-bg); color: var(--sel-text); }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.75;
+      min-height: 100vh;
+      background-image: repeating-linear-gradient(
+        45deg, transparent, transparent 2px,
+        rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px
+      );
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--sunken); }
+    ::-webkit-scrollbar-thumb { background: var(--raised); box-shadow: var(--bevel-out); }
+
+    /* ── WRAPPER ── */
+    .wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+      box-shadow: var(--bevel-out), 3px 3px 0 var(--border-dk);
+      background: var(--surface);
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      grid-column: 1 / -1;
+      background: var(--sel-bg);
+      padding: 16px 24px 14px;
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      box-shadow: inset 0 -2px 0 var(--border-dk), inset 0 -3px 0 var(--border-lt);
+      position: relative;
+    }
+
+    .site-title {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .site-title span { color: #aaddff; }
+
+    .site-subtitle {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.06em;
+    }
+
+    .header-nav {
+      margin-left: auto;
+      display: flex;
+      gap: 2px;
+    }
+    .header-nav a {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      padding: 3px 10px;
+      background: rgba(255,255,255,0.08);
+      box-shadow: var(--bevel-out);
+      transition: background 0.15s;
+    }
+    .header-nav a:hover {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      border-right: 1px solid var(--border-dk);
+      box-shadow: 1px 0 0 var(--border-lt);
+      padding: 20px 14px;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sidebar-section h3 {
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border-dk);
+      box-shadow: 0 1px 0 var(--border-lt);
+    }
+
+    .avatar-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 8px;
+      background: var(--sunken);
+      box-shadow: var(--bevel-in);
+    }
+    .avatar-icon {
+      width: 52px; height: 52px;
+      background: var(--raised);
+      box-shadow: var(--bevel-out);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .avatar-name { font-size: 0.78rem; color: var(--text); font-weight: 700; }
+    .avatar-bio  { font-size: 0.68rem; color: var(--text-dim); text-align: center; line-height: 1.4; }
+
+    .archive-list { list-style: none; display: flex; flex-direction: column; }
+    .archive-list li a {
+      display: flex; justify-content: space-between;
+      padding: 3px 6px;
+      font-size: 0.7rem; color: var(--text-dim);
+      text-decoration: none;
+      transition: background 0.1s, color 0.1s;
+    }
+    .archive-list li a:hover {
+      background: var(--sel-bg); color: var(--sel-text);
+    }
+    .archive-list li a span { color: var(--text-faint); }
+    .archive-list li a:hover span { color: rgba(255,255,255,0.6); }
+
+    .sidebar-quote {
+      font-style: italic;
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      line-height: 1.6;
+      padding: 8px 10px;
+      background: var(--sunken);
+      box-shadow: var(--bevel-in);
+    }
+
+    /* ── MAIN ── */
+    .main-content {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── POST CARD ── */
+    .post {
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border-dk);
+      box-shadow: 0 1px 0 var(--border-lt);
+      animation: fadeIn 0.4s ease both;
+    }
+    .post:last-of-type { border-bottom: none; box-shadow: none; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .post-meta-top {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+    }
+    .badge {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 2px 7px;
+      background: var(--raised);
+      box-shadow: var(--bevel-out);
+      color: var(--link);
+    }
+    .post-date { font-size: 0.68rem; color: var(--text-dim); }
+
+    .post-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 10px;
+      transition: color 0.15s;
+    }
+    .post-title:hover { color: var(--link); }
+
+    .post-body {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+    .post-body p { margin-bottom: 10px; }
+    .post-body code {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      background: var(--sunken);
+      box-shadow: var(--bevel-in);
+      padding: 0 5px;
+      color: #aaddaa;
+    }
+    .post-body blockquote {
+      margin: 12px 0;
+      padding: 8px 14px;
+      border-left: 3px solid var(--raised);
+      background: var(--sunken);
+      box-shadow: var(--bevel-in);
+      color: var(--text-dim);
+      font-style: italic;
+      font-size: 0.82rem;
+    }
+
+    .read-more {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 3px 12px;
+      background: var(--raised);
+      box-shadow: var(--bevel-out);
+      transition: background 0.15s, color 0.15s;
+    }
+    .read-more:hover {
+      background: var(--sel-bg);
+      color: var(--sel-text);
+    }
+    .read-more::after { content: ' →'; }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      grid-column: 1 / -1;
+      background: var(--sunken);
+      box-shadow: inset 0 1px 0 var(--border-lt), inset 0 2px 0 var(--border-dk);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .site-footer p { font-size: 0.62rem; color: var(--text-faint); letter-spacing: 0.05em; }
+    .site-footer a { color: var(--text-faint); text-decoration: none; transition: color 0.15s; }
+    .site-footer a:hover { color: var(--link); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      .wrapper { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .site-header { flex-wrap: wrap; gap: 8px; }
+      .header-nav { margin-left: 0; }
+      .main-content { padding: 18px 16px; }
+      .site-footer { flex-direction: column; gap: 4px; text-align: center; }
+    }
+  </style>
 </head>
-<body class="text-slate-800">
-    <div class="max-w-4xl mx-auto px-8 py-20">
-        <div class="mb-16">
-            <h1 class="text-4xl font-extrabold tracking-tight text-slate-900">Research & Insights</h1>
-            <p class="mt-4 text-lg text-slate-500">Security research, reverse engineering, and technical deep dives.</p>
-        </div>
+<body>
+<div class="wrapper">
 
-        <div class="grid gap-12">
-            <article>
-                <time class="text-sm text-blue-600 font-semibold uppercase tracking-wider">Feb 2026</time>
-                <h2 class="mt-2 text-2xl font-bold text-slate-900 hover:underline cursor-pointer">
-                    Tricking Users with YouTube's Redirect System
-                </h2>
-                <p class="mt-3 text-slate-600 leading-relaxed">
-                    A technical breakdown of how URL parsing can be exploited to bypass security filters...
-                </p>
-                <div class="mt-4 flex items-center gap-4 text-sm font-medium text-slate-400">
-                    <span>idkhidden</span>
-                    <span>•</span>
-                    <span class="bg-slate-200 px-2 py-1 rounded text-xs text-slate-700 uppercase">Web Security</span>
-                </div>
-            </article>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="site-title">reverse<span>sec</span></div>
+    <div class="site-subtitle">// research & ramblings</div>
+    <nav class="header-nav">
+      <a href="index.html">archivew</a>
+      <a href="#">about</a>
+      <a href="#">contact</a>
+      <a href="#">rss</a>
+    </nav>
+  </header>
 
-            <article class="border-t border-slate-200 pt-12">
-                <time class="text-sm text-blue-600 font-semibold uppercase tracking-wider">Oct 2025</time>
-                <h2 class="mt-2 text-2xl font-bold text-slate-900 hover:underline cursor-pointer">
-                    Tricking Easy Anti-Cheat into Protecting Any Application
-                </h2>
-                <p class="mt
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="avatar-block">
+      <div class="avatar-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <path d="M14 2L4 6v8c0 5.5 4.3 10.7 10 12 5.7-1.3 10-6.5 10-12V6L14 2z" stroke="#88bbee" stroke-width="1.5" fill="none"/>
+          <path d="M9 14l4 4 6-6" stroke="#88bbee" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="avatar-name">idkhidden</div>
+      <div class="avatar-bio">breaking things quietly since 2019</div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Archive</h3>
+      <ul class="archive-list">
+        <li><a href="#">February 2025 <span>(1)</span></a></li>
+        <li><a href="#">October 2024 <span>(1)</span></a></li>
+        <li><a href="#">August 2024 <span>(3)</span></a></li>
+        <li><a href="#">May 2024 <span>(2)</span></a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar-quote">
+      "the best way to understand a system is to find where it breaks."
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <article class="post">
+      <div class="post-meta-top">
+        <span class="badge">research</span>
+        <span class="post-date">Feb 06, 2025</span>
+      </div>
+      <a class="post-title" href="archive/fullguidewov.html">
+        Tricking Users with YouTube's Redirect System
+      </a>
+      <div class="post-body">
+        <p>So I've been poking around YouTube's URL parsing for a while now and found something pretty interesting. The redirect system they use for outbound links can be abused to make a malicious URL look completely legitimate.</p>
+        <p>The basic idea: YouTube wraps external links through <code>youtube.com/redirect?q=</code> — and because the domain shows as <em>youtube.com</em>, users trust it without thinking twice.</p>
+        <blockquote>"trust the domain, not the URL" — the assumption that gets people every time.</blockquote>
+      </div>
+      <a class="read-more" href="archive/fullguidewov.html">keep reading</a>
+    </article>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>© 2025 reversesec — independent security research</p>
+    <p>
+      <a href="#">twitter</a> &nbsp;·&nbsp;
+      <a href="#">github</a> &nbsp;·&nbsp;
+      <a href="#">rss feed</a>
+    </p>
+  </footer>
+
+</div>
+</body>
+</html>
