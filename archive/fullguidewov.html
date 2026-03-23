@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>bloody computer: docs 1</title>
+  <title>internet: docs 1</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
 
@@ -290,6 +290,98 @@
     }
     .nav-btn:hover { background: var(--sel-bg); color: var(--sel-text); }
 
+        .video-frame {
+      margin: 14px 0;
+
+    }
+
+    /* titlebar แบบ GTK window */
+    .video-titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 3px 8px;
+      background: var(--sel-bg);
+      user-select: none;
+    }
+    .video-titlebar-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.04em;
+    }
+    .video-titlebar-left::before {
+      content: '▶';
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.6);
+    }
+    .video-titlebar-badge {
+      font-size: 0.55rem;
+      padding: 1px 5px;
+      background: rgba(0,0,0,0.25);
+      box-shadow: var(--bevel-in);
+      color: #aaddff;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* video container */
+.video-body {
+  padding: 6px 6px 0 6px;
+  background: #000;
+}
+
+    /* แบบ 1: ไฟล์ตัวเอง */
+    .video-body video {
+      display: block;
+      width: 100%;
+      max-height: 400px;
+      background: #000;
+    }
+
+    /* แบบ 2: iframe embed (16:9) */
+    .video-embed {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+    }
+    .video-embed iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* caption bar */
+    .video-caption {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 10px;
+      background: var(--raised);
+      box-shadow: inset 0 1px 0 var(--border-lt), inset 0 -1px 0 var(--border-dk);
+    }
+    .video-caption-text {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+    .video-caption-meta {
+      font-size: 0.62rem;
+      color: var(--text-faint);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .video-caption-meta span {
+      padding: 1px 6px;
+      background: var(--surface);
+      box-shadow: var(--bevel-in);
+    }
+
     /* ── FOOTER ── */
     .site-footer {
       grid-column: 1 / -1;
@@ -367,6 +459,23 @@
       <img class="post-img" src="../assets/heat.png" alt="IP block diagram"/>
       <span class="post-img-caption"><strong>403 block page served by Wolvesville when a browser VPN is detected 
 during the connection handshake</strong></span>
+<div class="video-frame">
+  <div class="video-titlebar">
+    <div class="video-titlebar-left">
+      too many requests
+      <span class="video-titlebar-badge">mp4</span>
+    </div>
+  </div>
+  <div class="video-body">
+    <video controls>
+      <source src="../assets/getblock.mp4" type="video/mp4">
+      Your browser does not support video.
+    </video>
+  </div>
+  <div class="video-caption">
+    <span class="video-caption-text">this is how ip blocking works when u reach maximum requests when u connect without warp</span>
+  </div>
+</div>
       <h3 id="validation-gap">The Cloudflare Loophole</h3>
       <p>The "why" is the interesting part. It looks like Wolvesville uses Cloudflare’s own security suite (like Turnstile) for their backend. My theory is that because the traffic is coming from a Cloudflare IP, the system flags it as "trusted" and lets you skip the security verification entirely. It’s a massive logic gap in their new security layer.</p>
       <img class="post-img" src="../assets/cloudflarepass.gif" alt="cf lies"/>
@@ -394,7 +503,7 @@ during the connection handshake</strong></span>
       <div class="ornament">- - - - -</div>
 
       <h2 id="impact">Banning</h2>
-      <p>How does Wolvesville handle bans these days? Honestly, I’m not sure how advanced their actual bot detection is, but my current setup doesn’t seem to trigger any "automated bot" flags. From my experience, the bans aren't coming from manual Guardian reviews they’re mostly from the game’s auto-ban system.</p>
+      <p>How does Wolvesville handle bans these days? Honestly, I’m not sure how advanced their actual bot detection is, but my current setup doesn’t seem to trigger any "automated bot" flags. From my experience, the bans aren't coming from manual Guardian reviews—they’re mostly from the game’s auto-ban system.</p>
       <p>In short, you’ll likely get flagged if you’re reported too often for being AFK. The interesting part is the penalty: it seems to be capped at 3 days. Whether it’s your first time or your tenth, it stays at 3 days. It looks like a standard automated response for accounts that hit a certain threshold of reports.</p>
     <div class="callout">
         <strong>⚠ Tip</strong>
@@ -405,9 +514,18 @@ during the connection handshake</strong></span>
 
       <h2 id="mitigation">Coding</h2>
       <p>I’m not going to spoon-feed the code here if you’re into botting, you probably know the basics anyway. But the logic is dead simple. You just need to detect the screen, find the buttons, and handle the tab swaps. I'll drop all the libaries below.</p>
-
-
-      <div class="ornament">- - - - -</div>
+      <div class="video-frame">
+  <div class="video-titlebar">
+    <div class="video-titlebar-left">
+      showcase
+      <span class="video-titlebar-badge">mp4</span>
+    </div>
+  </div>
+  <div class="video-body">
+    <video controls>
+      <source src="../assets/howtoolworks.mp4" type="video/mp4">
+    </video>
+  </div>
 
       <h2 id="disclosure">Libaries</h2>
       <div class="timeline">
